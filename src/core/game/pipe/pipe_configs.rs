@@ -1,0 +1,3 @@
+pub const PIPE_SPAWN_INTERVAL: f32 = 3.0;
+pub const SPACE_BETWEEN_PIPES_IN_PERCENT: f32 = 0.25;
+pub const PIPE_MOVEMENT_SPEED: f32 = 200.0;
