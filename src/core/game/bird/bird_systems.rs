@@ -21,7 +21,7 @@ pub fn spawn_bird(
 
     let window_with = window.resolution.width();
 
-    let bird_radius = window_with * 0.03;
+    let bird_radius = window_with * 0.025;
 
     let _bird = commands
         .spawn((
