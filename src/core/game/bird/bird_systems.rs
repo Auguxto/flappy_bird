@@ -6,7 +6,7 @@ use bevy::window::PrimaryWindow;
 use crate::core::game::collision::collision_events::BirdEndHitScoreEvent;
 
 use super::bird_components::Bird;
-use super::bird_configs::{BIRD_JUMP_FORCE, BIRD_RADIUS};
+use super::bird_configs::BIRD_JUMP_FORCE;
 use super::bird_events::BirdScoreEvent;
 use super::bird_resources::BirdResources;
 

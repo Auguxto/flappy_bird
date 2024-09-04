@@ -8,7 +8,6 @@ mod assets;
 mod camera;
 mod game;
 mod overlay;
-mod player;
 mod window;
 
 pub struct CorePlugin;
