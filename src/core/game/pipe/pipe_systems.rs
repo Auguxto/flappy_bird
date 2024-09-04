@@ -78,17 +78,14 @@ pub fn spawn_pipe(
         commands.spawn((
             ScoreArea,
             // Physics
-            RigidBody::Dynamic,
+            RigidBody::Kinematic,
             pipe_locked_axes,
-            Collider::rectangle(pipe_width, min_top_pipe_height),
+            Collider::rectangle(pipe_width, min_top_pipe_height - 2.0),
             Sensor,
-            // Material
-            MaterialMesh2dBundle {
-                mesh: Mesh2dHandle(meshes.add(Rectangle::new(pipe_width, min_top_pipe_height))),
-                material: materials.add(Color::srgb(0.0, 0.0, 0.0).with_alpha(0.0)),
-                transform: score_area_transform,
-                ..default()
-            },
+            // Trasnform
+            score_area_transform,
+            // Inspector
+            Name::new("Score Area"),
         ));
 
         // Top pipe
@@ -106,6 +103,8 @@ pub fn spawn_pipe(
                     transform: top_pipe_transform,
                     ..default()
                 },
+                // Inspector
+                Name::new("Pipe"),
             ))
             .id();
 
@@ -124,22 +123,31 @@ pub fn spawn_pipe(
                     transform: bottom_pipe_transform,
                     ..default()
                 },
+                // Inspector
+                Name::new("Pipe"),
             ))
             .id();
     }
 }
 
-type PipesQueryCondition = (With<Pipe>, With<ScoreArea>);
-
-pub fn pipe_movement(mut pipes: Query<&mut LinearVelocity, Or<PipesQueryCondition>>) {
-    for mut pipe_velocity in &mut pipes {
+pub fn pipe_movement(mut pipes_linear_velocities: Query<&mut LinearVelocity, With<Pipe>>) {
+    for mut pipe_velocity in &mut pipes_linear_velocities {
         pipe_velocity.x = -PIPE_MOVEMENT_SPEED;
+    }
+}
+
+pub fn score_area_movement(
+    mut score_areas_linear_velocities: Query<&mut LinearVelocity, With<ScoreArea>>,
+) {
+    for mut score_area_velocity in &mut score_areas_linear_velocities {
+        score_area_velocity.x = -PIPE_MOVEMENT_SPEED;
     }
 }
 
 pub fn pipe_despawn(
     mut commands: Commands,
     pipes: Query<(Entity, &Transform), With<Pipe>>,
+    score_areas: Query<(Entity, &Transform), With<ScoreArea>>,
     windows: Query<&Window, With<PrimaryWindow>>,
 ) {
     // Main window
@@ -154,11 +162,17 @@ pub fn pipe_despawn(
     // Width 1% of window width
     let pipe_width = window_width * 0.08;
 
-    let max_x_pipe_transform = -(window_width_half + (pipe_width / 2.0));
+    let max_x_transform = -(window_width_half + (pipe_width / 2.0));
 
-    for (pipe, pipe_transform) in pipes.iter() {
-        if pipe_transform.translation.x <= max_x_pipe_transform {
+    for (pipe, pipe_transform) in &pipes {
+        if pipe_transform.translation.x <= max_x_transform {
             commands.entity(pipe).despawn();
+        }
+    }
+
+    for (score_area, score_area_transform) in &score_areas {
+        if score_area_transform.translation.x <= max_x_transform {
+            commands.entity(score_area).despawn();
         }
     }
 }

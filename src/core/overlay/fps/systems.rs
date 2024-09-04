@@ -3,13 +3,15 @@ use bevy::prelude::*;
 use bevy::diagnostic::DiagnosticsStore;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 
+use crate::core::assets::FONT_FAMILY;
+
 #[derive(Component)]
 pub struct UIFpsContainer;
 
 #[derive(Component)]
 pub struct UIFpsText;
 
-pub fn setup_fps_counter(mut commands: Commands) {
+pub fn setup_fps_counter(mut commands: Commands, asset_server: Res<AssetServer>) {
     let root = commands
         .spawn((
             UIFpsContainer,
@@ -35,17 +37,17 @@ pub fn setup_fps_counter(mut commands: Commands) {
                     TextSection {
                         value: "FPS: ".into(),
                         style: TextStyle {
-                            font_size: 16.0,
+                            font_size: 32.0,
                             color: Color::WHITE,
-                            ..default()
+                            font: asset_server.load(FONT_FAMILY),
                         },
                     },
                     TextSection {
-                        value: " N/A".into(),
+                        value: "N/A".into(),
                         style: TextStyle {
-                            font_size: 16.0,
+                            font_size: 32.0,
                             color: Color::WHITE,
-                            ..default()
+                            font: asset_server.load(FONT_FAMILY),
                         },
                     },
                 ]),
@@ -77,7 +79,7 @@ pub fn fps_text_update_system(
                 Color::srgb(1.0, 0.0, 0.0)
             }
         } else {
-            text.sections[1].value = " N/A".into();
+            text.sections[1].value = "N/A".into();
             text.sections[1].style.color = Color::WHITE;
         }
     }

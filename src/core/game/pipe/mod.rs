@@ -23,6 +23,7 @@ impl Plugin for PipePlugin {
                 (pipe_systems::pipe_movement, pipe_systems::pipe_despawn)
                     .after(pipe_systems::spawn_pipe),
             )
-            .add_systems(Update, pipe_systems::pipe_hit);
+            .add_systems(Update, pipe_systems::pipe_hit)
+            .add_systems(Update, pipe_systems::score_area_movement);
     }
 }

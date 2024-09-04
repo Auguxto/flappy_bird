@@ -32,7 +32,7 @@ impl Plugin for CorePlugin {
         .insert_resource(Gravity(Vec2::NEG_Y * 100.0))
         .add_plugins(window::WindowPlugin)
         .add_plugins(camera::CameraPlugin)
-        .add_plugins(game::GamePlugin)
-        .add_plugins(WorldInspectorPlugin::new());
+        .add_plugins(game::GamePlugin);
+        // .add_plugins(WorldInspectorPlugin::new());
     }
 }
