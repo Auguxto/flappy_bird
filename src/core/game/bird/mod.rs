@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+mod bird_bundles;
 pub mod bird_components;
 mod bird_configs;
 pub mod bird_events;

@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+mod pipe_bundles;
 pub mod pipe_components;
 mod pipe_configs;
 mod pipe_resources;

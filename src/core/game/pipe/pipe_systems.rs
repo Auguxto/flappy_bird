@@ -1,21 +1,22 @@
-use avian2d::prelude::{Collider, LinearVelocity, LockedAxes, RigidBody, Sensor};
-use bevy::color::palettes::css::{GREEN, PURPLE};
+use avian2d::prelude::*;
+use bevy::color::palettes::css::PURPLE;
 use bevy::prelude::*;
-use bevy::sprite::{MaterialMesh2dBundle, Mesh2dHandle};
 use bevy::window::PrimaryWindow;
-
 use rand::{thread_rng, Rng};
 
 use crate::core::game::collision::collision_events::BirdHitPipeEvent;
 
+use super::pipe_bundles::{PipeBundle, ScoreAreaBundle};
 use super::pipe_components::{Pipe, ScoreArea};
 use super::pipe_configs::{PIPE_MOVEMENT_SPEED, SPACE_BETWEEN_PIPES_IN_PERCENT};
 use super::pipe_resources::PipeResources;
 
+// Tick spawn pipe interval
 pub fn tick_pipe_spawn_interval(time: Res<Time>, mut pipes_resources: ResMut<PipeResources>) {
     pipes_resources.spawn_interval.tick(time.delta());
 }
 
+// Spawning pipes
 pub fn spawn_pipe(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -26,7 +27,7 @@ pub fn spawn_pipe(
     if pipe_resources.spawn_interval.finished() {
         let mut rng = thread_rng();
 
-        // Main window
+        // Primary Window
         let window = windows.get_single().unwrap();
 
         // Window resolutions
@@ -43,7 +44,7 @@ pub fn spawn_pipe(
         // Spawn pipe X transform position
         let pipe_x_transform = window_width_half + (pipe_width / 2.0);
 
-        // Min is % of window height
+        // Min is % of window height (is also the height of score area)
         let min_top_pipe_height = window_height * SPACE_BETWEEN_PIPES_IN_PERCENT;
 
         // Max is half of window height
@@ -73,60 +74,30 @@ pub fn spawn_pipe(
             0.0,
         );
 
-        let pipe_locked_axes = LockedAxes::new().lock_translation_y().lock_rotation();
-
-        commands.spawn((
-            ScoreArea,
-            // Physics
-            RigidBody::Kinematic,
-            pipe_locked_axes,
-            Collider::rectangle(pipe_width, min_top_pipe_height - 2.0),
-            Sensor,
-            // Trasnform
+        // Spawning score area
+        commands.spawn(ScoreAreaBundle::new(
+            pipe_width,
+            min_top_pipe_height,
             score_area_transform,
-            // Inspector
-            Name::new("Score Area"),
         ));
 
-        // Top pipe
-        let _top_pipe = commands
-            .spawn((
-                Pipe,
-                // Physics
-                RigidBody::Dynamic,
-                pipe_locked_axes,
-                Collider::rectangle(pipe_width, top_pipe_height),
-                // Mesh
-                MaterialMesh2dBundle {
-                    mesh: Mesh2dHandle(meshes.add(Rectangle::new(pipe_width, top_pipe_height))),
-                    material: materials.add(Color::from(GREEN)),
-                    transform: top_pipe_transform,
-                    ..default()
-                },
-                // Inspector
-                Name::new("Pipe"),
-            ))
-            .id();
+        // Spawning top pipe
+        commands.spawn(PipeBundle::new(
+            &mut meshes,
+            &mut materials,
+            pipe_width,
+            top_pipe_height,
+            top_pipe_transform,
+        ));
 
-        // Bottom pipe
-        let _bottom_pipe = commands
-            .spawn((
-                Pipe,
-                // Physics
-                RigidBody::Dynamic,
-                pipe_locked_axes,
-                Collider::rectangle(pipe_width, bottom_pipe_height),
-                // Mesh
-                MaterialMesh2dBundle {
-                    mesh: Mesh2dHandle(meshes.add(Rectangle::new(pipe_width, bottom_pipe_height))),
-                    material: materials.add(Color::from(GREEN)),
-                    transform: bottom_pipe_transform,
-                    ..default()
-                },
-                // Inspector
-                Name::new("Pipe"),
-            ))
-            .id();
+        // Spawning bottom pipe
+        commands.spawn(PipeBundle::new(
+            &mut meshes,
+            &mut materials,
+            pipe_width,
+            bottom_pipe_height,
+            bottom_pipe_transform,
+        ));
     }
 }
 
