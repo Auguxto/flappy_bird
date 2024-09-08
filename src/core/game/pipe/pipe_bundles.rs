@@ -1,4 +1,4 @@
-use avian2d::prelude::{Collider, LockedAxes, RigidBody, Sensor};
+use avian2d::prelude::{Collider, CollisionMargin, LockedAxes, RigidBody, Sensor};
 use bevy::{
     color::palettes::css::GREEN,
     prelude::*,

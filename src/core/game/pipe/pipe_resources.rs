@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use super::pipe_configs::PIPE_SPAWN_INTERVAL;
+use crate::config::PIPE_SPAWN_INTERVAL;
 
 #[derive(Resource)]
 pub struct PipeResources {

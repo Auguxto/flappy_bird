@@ -4,11 +4,11 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use rand::{thread_rng, Rng};
 
+use crate::config::{PIPE_MOVEMENT_SPEED, SPACE_BETWEEN_PIPES_IN_PERCENT};
 use crate::core::game::collision::collision_events::BirdHitPipeEvent;
 
 use super::pipe_bundles::{PipeBundle, ScoreAreaBundle};
 use super::pipe_components::{Pipe, ScoreArea};
-use super::pipe_configs::{PIPE_MOVEMENT_SPEED, SPACE_BETWEEN_PIPES_IN_PERCENT};
 use super::pipe_resources::PipeResources;
 
 // Tick spawn pipe interval
@@ -77,7 +77,8 @@ pub fn spawn_pipe(
         // Spawning score area
         commands.spawn(ScoreAreaBundle::new(
             pipe_width,
-            min_top_pipe_height,
+            // Min 5.0 to not overlap pipe collider
+            min_top_pipe_height - 5.0,
             score_area_transform,
         ));
 
@@ -130,7 +131,7 @@ pub fn pipe_despawn(
     // Half window resolution
     let window_width_half = window_width / 2.0;
 
-    // Width 1% of window width
+    // Width 8% of window width
     let pipe_width = window_width * 0.08;
 
     let max_x_transform = -(window_width_half + (pipe_width / 2.0));
@@ -145,6 +146,20 @@ pub fn pipe_despawn(
         if score_area_transform.translation.x <= max_x_transform {
             commands.entity(score_area).despawn();
         }
+    }
+}
+
+pub fn despawn_all_pipes(
+    mut commands: Commands,
+    pipes: Query<Entity, With<Pipe>>,
+    score_areas: Query<Entity, With<ScoreArea>>,
+) {
+    for pipe in &pipes {
+        commands.entity(pipe).despawn();
+    }
+
+    for score_area in &score_areas {
+        commands.entity(score_area).despawn();
     }
 }
 

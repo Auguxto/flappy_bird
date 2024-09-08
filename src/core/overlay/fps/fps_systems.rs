@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use bevy::diagnostic::DiagnosticsStore;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 
-use crate::core::assets::FONT_FAMILY;
+use crate::config::FONT_FAMILY;
 
 #[derive(Component)]
 pub struct UIFpsContainer;
@@ -96,5 +96,14 @@ pub fn fps_counter_showhide(
             Visibility::Hidden => Visibility::Visible,
             _ => Visibility::Hidden,
         };
+    }
+}
+
+pub fn despawn_fps_conuter(
+    mut commands: Commands,
+    fps_counters: Query<Entity, With<UIFpsContainer>>,
+) {
+    for fps_counter in &fps_counters {
+        commands.entity(fps_counter).despawn_recursive();
     }
 }

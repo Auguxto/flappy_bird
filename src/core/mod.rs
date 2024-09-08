@@ -2,8 +2,8 @@ use avian2d::prelude::*;
 use bevy::prelude::*;
 use bevy::render::settings::{Backends, RenderCreation, WgpuSettings};
 use bevy::render::RenderPlugin;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
-mod assets;
 mod camera;
 mod game;
 mod overlay;

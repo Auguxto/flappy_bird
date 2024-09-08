@@ -4,6 +4,12 @@ use bevy::prelude::*;
 pub struct UIContainer;
 
 #[derive(Component)]
+pub struct UIMainMenu;
+
+#[derive(Component)]
+pub struct UIDead;
+
+#[derive(Component)]
 pub struct UIScoreContainer;
 
 #[derive(Component)]

@@ -2,11 +2,12 @@ use avian2d::prelude::*;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
-use crate::core::game::collision::collision_events::BirdEndHitScoreEvent;
+use crate::config::BIRD_JUMP_FORCE;
+use crate::core::game::collision::collision_events::{BirdEndHitScoreEvent, BirdHitPipeEvent};
+use crate::core::game::state::state_states::ScreenState;
 
 use super::bird_bundles::BirdBundle;
 use super::bird_components::Bird;
-use super::bird_configs::BIRD_JUMP_FORCE;
 use super::bird_events::BirdScoreEvent;
 use super::bird_resources::BirdResources;
 
@@ -19,9 +20,16 @@ pub fn spawn_bird(
 ) {
     let window = windows.get_single().unwrap();
 
-    let bird_radius = window.resolution.width() * 0.025;
+    let bird_radius = window.resolution.width() * 0.017;
 
     commands.spawn(BirdBundle::new(&mut meshes, &mut materials, bird_radius));
+}
+
+// Despawn bird
+pub fn despawn_bird(mut commands: Commands, birds: Query<Entity, With<Bird>>) {
+    for bird in &birds {
+        commands.entity(bird).despawn();
+    }
 }
 
 // Bird jump when pressing Space
@@ -49,5 +57,15 @@ pub fn update_bird_score(
         let score = &mut bird_resources.score;
         *score += 1;
         event_bird_score.send(BirdScoreEvent);
+    }
+}
+
+pub fn read_bird_collision_events(
+    mut bird_hit_pipe_event_reader: EventReader<BirdHitPipeEvent>,
+    mut next_screen_state: ResMut<NextState<ScreenState>>,
+) {
+    // Changing to screen state dead
+    for _ in bird_hit_pipe_event_reader.read() {
+        next_screen_state.set(ScreenState::Dead);
     }
 }

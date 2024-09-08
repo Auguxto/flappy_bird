@@ -1,40 +1,104 @@
 use bevy::prelude::*;
 
-use crate::core::{
-    assets::FONT_FAMILY,
-    game::bird::{bird_events::BirdScoreEvent, bird_resources::BirdResources},
-};
+use crate::config::FONT_FAMILY;
+use crate::core::game::bird::{bird_events::BirdScoreEvent, bird_resources::BirdResources};
 
-use super::ui_components::{
-    UIContainer, UIScoreContainer, UIScoreResult, UIScoreResultImage, UIScoreResultImages,
-};
+use super::bundles::text_bundle::UIText;
+use super::screens::commom::containers::UIContainerFlexCenter;
+use super::ui_components::*;
 
-pub fn spawn_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let mut score_images: Vec<UiImage> = Vec::new();
-
-    for _ in 0..2 {
-        score_images.push(UiImage::new(asset_server.load("sprites/score/0.png")));
-    }
-
-    // Main UI Conatiner
-    let ui_container = commands
-        .spawn((
-            UIContainer,
-            NodeBundle {
-                style: Style {
-                    display: Display::Flex,
-                    position_type: PositionType::Relative,
-                    width: Val::Vw(100.0),
-                    height: Val::Vh(100.0),
-                    ..default()
-                },
-                z_index: ZIndex::Global(i32::MAX),
+pub fn spawn_main_ui(mut commands: Commands) {
+    // Main UI Container
+    commands.spawn((
+        UIContainer,
+        NodeBundle {
+            style: Style {
+                display: Display::Flex,
+                position_type: PositionType::Relative,
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                width: Val::Vw(100.0),
+                height: Val::Vh(100.0),
                 ..default()
             },
-            Name::new("UIContainer"),
-        ))
-        .id();
+            z_index: ZIndex::Global(i32::MAX),
+            ..default()
+        },
+        Name::new("UIContainer"),
+    ));
+}
 
+pub fn spawn_dead_screen(
+    mut commands: Commands,
+    mut bird_resouces: ResMut<BirdResources>,
+    mut asset_server: ResMut<AssetServer>,
+    ui_containers: Query<Entity, With<UIContainer>>,
+) {
+    if let Ok(ui_container) = ui_containers.get_single() {
+        let dead_screen = commands
+            .spawn((UIDead, UIContainerFlexCenter::new("UIDead")))
+            .id();
+        let score_text = commands
+            .spawn(UIText::new(
+                format!("Score: {}", bird_resouces.score).as_str(),
+                &mut asset_server,
+            ))
+            .id();
+        let restart_text = commands
+            .spawn(UIText::new(
+                "Pressione 'Espaço' para reiniciar.",
+                &mut asset_server,
+            ))
+            .id();
+
+        bird_resouces.score = 0;
+
+        commands
+            .entity(dead_screen)
+            .push_children(&[score_text, restart_text]);
+        commands.entity(ui_container).push_children(&[dead_screen]);
+    }
+}
+
+pub fn despawn_dead_screen(mut commands: Commands, dead_screens: Query<Entity, With<UIDead>>) {
+    if let Ok(dead_screen) = dead_screens.get_single() {
+        commands.entity(dead_screen).despawn_recursive();
+    }
+}
+
+pub fn spawn_main_menu(
+    mut commands: Commands,
+    mut asset_server: ResMut<AssetServer>,
+    ui_containers: Query<Entity, With<UIContainer>>,
+) {
+    if let Ok(ui_container) = ui_containers.get_single() {
+        let loading = commands
+            .spawn((UIMainMenu, UIContainerFlexCenter::new("UILoadingContainer")))
+            .id();
+
+        let text = commands
+            .spawn(UIText::new(
+                "Pressione 'Espaço' para começar",
+                &mut asset_server,
+            ))
+            .id();
+
+        commands.entity(loading).push_children(&[text]);
+        commands.entity(ui_container).push_children(&[loading]);
+    }
+}
+
+pub fn despawn_main_menu(mut commands: Commands, ui_loadings: Query<Entity, With<UIMainMenu>>) {
+    for ui_loading in &ui_loadings {
+        commands.entity(ui_loading).despawn_recursive();
+    }
+}
+
+pub fn spawn_score_ui(
+    ui_containers: Query<Entity, With<UIContainer>>,
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
     // Score Container - Top Left
     let ui_score_container = commands
         .spawn((
@@ -125,9 +189,12 @@ pub fn spawn_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .entity(ui_score_container)
         .push_children(&[ui_score_result, ui_score_result_images_container]);
-    commands
-        .entity(ui_container)
-        .push_children(&[ui_score_container]);
+
+    for ui_container in &ui_containers {
+        commands
+            .entity(ui_container)
+            .push_children(&[ui_score_container]);
+    }
 }
 
 pub fn update_ui_score_result(
@@ -179,5 +246,14 @@ pub fn update_ui_score_result(
                     .add_child(ui_score_result_image);
             }
         }
+    }
+}
+
+pub fn despawn_score_ui(
+    mut commands: Commands,
+    ui_score_scontainers: Query<Entity, With<UIScoreContainer>>,
+) {
+    for ui_score_container in &ui_score_scontainers {
+        commands.entity(ui_score_container).despawn_recursive();
     }
 }
