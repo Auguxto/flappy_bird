@@ -26,6 +26,7 @@ impl Plugin for BirdPlugin {
                     bird_jump_input,
                     update_bird_score,
                     read_bird_collision_events,
+                    check_bird_out_screen,
                 )
                     // Run if is in game state
                     .run_if(in_state(ScreenState::InGame)),

@@ -2,7 +2,7 @@ use avian2d::prelude::*;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
-use crate::config::BIRD_JUMP_FORCE;
+use crate::config::{BIRD_JUMP_FORCE, BIRD_RADIUS};
 use crate::core::game::collision::collision_events::{BirdEndHitScoreEvent, BirdHitPipeEvent};
 use crate::core::game::state::state_states::ScreenState;
 
@@ -20,7 +20,7 @@ pub fn spawn_bird(
 ) {
     let window = windows.get_single().unwrap();
 
-    let bird_radius = window.resolution.width() * 0.017;
+    let bird_radius = window.resolution.width() * BIRD_RADIUS;
 
     commands.spawn(BirdBundle::new(&mut meshes, &mut materials, bird_radius));
 }
@@ -40,6 +40,26 @@ pub fn bird_jump_input(
     for mut bird_linear_velocitiy in &mut birds_linear_velocities {
         if keyboard.just_pressed(KeyCode::Space) {
             bird_linear_velocitiy.y = BIRD_JUMP_FORCE;
+        }
+    }
+}
+
+// Check if bird is going out of screen
+pub fn check_bird_out_screen(
+    mut next_screen_state: ResMut<NextState<ScreenState>>,
+    birds_trasnform: Query<&Transform, With<Bird>>,
+    windows: Query<&Window, With<PrimaryWindow>>,
+) {
+    if let Ok(window) = windows.get_single() {
+        if let Ok(bird_transform) = birds_trasnform.get_single() {
+            let half_window_height =
+                window.resolution.height() / 2.0 - (window.resolution.width() * BIRD_RADIUS);
+
+            if bird_transform.translation.y >= half_window_height
+                || bird_transform.translation.y <= -half_window_height
+            {
+                next_screen_state.set(ScreenState::Dead);
+            }
         }
     }
 }
