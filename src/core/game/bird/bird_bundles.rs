@@ -12,7 +12,8 @@ pub struct BirdBundle {
     rigidbody: RigidBody,
     collider: Collider,
     gravity_scale: GravityScale,
-    mesh: MaterialMesh2dBundle<ColorMaterial>,
+    // mesh: MaterialMesh2dBundle<ColorMaterial>,
+    sprite: SpriteBundle,
     name: Name,
 }
 
@@ -20,6 +21,7 @@ impl BirdBundle {
     pub fn new(
         meshes: &mut ResMut<Assets<Mesh>>,
         materials: &mut ResMut<Assets<ColorMaterial>>,
+        asset_server: &mut ResMut<AssetServer>,
         bird_radius: f32,
     ) -> Self {
         let mesh = MaterialMesh2dBundle {
@@ -27,16 +29,24 @@ impl BirdBundle {
                 radius: bird_radius,
             })),
             material: materials.add(Color::WHITE),
-            transform: Transform::default(),
             ..default()
         };
 
         Self {
-            mesh,
+            // mesh,
             bird: Bird,
             rigidbody: RigidBody::Dynamic,
             collider: Collider::circle(bird_radius),
             gravity_scale: GravityScale(10.0),
+            sprite: SpriteBundle {
+                texture: asset_server.load("sprites/bird/yellowbird-midflap.png"),
+                transform: Transform::default(),
+                sprite: Sprite {
+                    custom_size: Some(Vec2::new(34.0 * 2.0, 24.0 * 2.0)),
+                    ..default()
+                },
+                ..default()
+            },
             name: Name::new("Bird"),
         }
     }

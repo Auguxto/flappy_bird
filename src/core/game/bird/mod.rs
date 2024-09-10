@@ -24,6 +24,8 @@ impl Plugin for BirdPlugin {
                 Update,
                 (
                     bird_jump_input,
+                    update_bird_sprite,
+                    update_bird_angle,
                     update_bird_score,
                     read_bird_collision_events,
                     check_bird_out_screen,

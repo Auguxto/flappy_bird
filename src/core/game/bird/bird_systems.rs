@@ -16,13 +16,46 @@ pub fn spawn_bird(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    mut asset_server: ResMut<AssetServer>,
     windows: Query<&Window, With<PrimaryWindow>>,
 ) {
     let window = windows.get_single().unwrap();
 
     let bird_radius = window.resolution.width() * BIRD_RADIUS;
 
-    commands.spawn(BirdBundle::new(&mut meshes, &mut materials, bird_radius));
+    commands.spawn(BirdBundle::new(
+        &mut meshes,
+        &mut materials,
+        &mut asset_server,
+        bird_radius,
+    ));
+}
+
+// Update bird sprite using based on linear velocity
+pub fn update_bird_sprite(
+    asset_server: Res<AssetServer>,
+    mut birds: Query<(&LinearVelocity, &mut Handle<Image>), With<Bird>>,
+) {
+    for (velocity, mut texture) in &mut birds {
+        if velocity.y < 0.0 {
+            *texture = asset_server.load("sprites/bird/yellowbird-downflap.png");
+        } else if velocity.y >= 0.0 && velocity.y < 100.0 {
+            *texture = asset_server.load("sprites/bird/yellowbird-midflap.png");
+        } else if velocity.y >= 100.0 {
+            *texture = asset_server.load("sprites/bird/yellowbird-upflap.png");
+        }
+    }
+}
+
+// Update bird angle using based on linear velocity
+pub fn update_bird_angle(
+    asset_server: Res<AssetServer>,
+    mut birds: Query<(&LinearVelocity, &mut Transform), With<Bird>>,
+) {
+    for (velocity, mut trasnform) in &mut birds {
+        let angle = velocity.y.remap(1000.0, -1000.0, 0.5, -0.5);
+        trasnform.rotation.z = angle;
+    }
 }
 
 // Despawn bird

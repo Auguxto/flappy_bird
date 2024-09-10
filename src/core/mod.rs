@@ -26,7 +26,9 @@ impl Plugin for CorePlugin {
                 }),
         )
         // Physics Plugins
-        .add_plugins((PhysicsPlugins::default(), PhysicsDebugPlugin::default()))
+        .add_plugins(PhysicsPlugins::default())
+        // Debug physics
+        // .add_plugins(PhysicsDebugPlugin::default())
         .insert_resource(Gravity(Vec2::NEG_Y * 100.0))
         .add_plugins(window::WindowPlugin)
         .add_plugins(camera::CameraPlugin)
