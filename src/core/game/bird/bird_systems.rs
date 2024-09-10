@@ -36,9 +36,10 @@ pub fn despawn_bird(mut commands: Commands, birds: Query<Entity, With<Bird>>) {
 pub fn bird_jump_input(
     mut birds_linear_velocities: Query<&mut LinearVelocity, With<Bird>>,
     keyboard: Res<ButtonInput<KeyCode>>,
+    mouse: Res<ButtonInput<MouseButton>>,
 ) {
     for mut bird_linear_velocitiy in &mut birds_linear_velocities {
-        if keyboard.just_pressed(KeyCode::Space) {
+        if keyboard.just_pressed(KeyCode::Space) || mouse.just_pressed(MouseButton::Left) {
             bird_linear_velocitiy.y = BIRD_JUMP_FORCE;
         }
     }
