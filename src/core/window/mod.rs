@@ -21,6 +21,8 @@ impl Plugin for WindowPlugin {
             }),
             ..default()
         })
+        // Default window background color
+        .insert_resource(ClearColor(Color::from(Srgba::hex("4ec0ca").unwrap())))
         // Overlays
         .add_plugins(OverlayPlugin)
         .add_systems(Update, window_systems::make_window_visible);

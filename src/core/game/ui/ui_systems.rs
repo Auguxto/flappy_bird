@@ -36,7 +36,10 @@ pub fn spawn_dead_screen(
 ) {
     if let Ok(ui_container) = ui_containers.get_single() {
         let dead_screen = commands
-            .spawn((UIDead, UIContainerFlexCenter::new("UIDead")))
+            .spawn((
+                UIDead,
+                UIContainerFlexCenter::new("UIDead", Color::from(Srgba::hex("4ec0ca").unwrap())),
+            ))
             .id();
         let score_text = commands
             .spawn(UIText::new(
@@ -68,23 +71,38 @@ pub fn despawn_dead_screen(mut commands: Commands, dead_screens: Query<Entity, W
 
 pub fn spawn_main_menu(
     mut commands: Commands,
-    mut asset_server: ResMut<AssetServer>,
+    asset_server: Res<AssetServer>,
     ui_containers: Query<Entity, With<UIContainer>>,
 ) {
     if let Ok(ui_container) = ui_containers.get_single() {
-        let loading = commands
-            .spawn((UIMainMenu, UIContainerFlexCenter::new("UILoadingContainer")))
-            .id();
-
-        let text = commands
-            .spawn(UIText::new(
-                "Pressione 'Espaço' para começar",
-                &mut asset_server,
+        let container = commands
+            .spawn((
+                UIMainMenu,
+                UIContainerFlexCenter::new(
+                    "UIMainMenuContainer",
+                    Color::from(Srgba::hex("4ec0ca").unwrap()),
+                ),
             ))
             .id();
 
-        commands.entity(loading).push_children(&[text]);
-        commands.entity(ui_container).push_children(&[loading]);
+        let start_image = commands
+            .spawn((
+                NodeBundle {
+                    style: Style {
+                        display: Display::Block,
+                        width: Val::Px(184.0),
+                        height: Val::Px(267.0),
+                        ..default()
+                    },
+                    ..default()
+                },
+                UiImage::new(asset_server.load("sprites/message.png")),
+            ))
+            .id();
+
+        commands.entity(container).push_children(&[start_image]);
+
+        commands.entity(ui_container).push_children(&[container]);
     }
 }
 

@@ -1,4 +1,3 @@
-use bevy::color::palettes::css::BLACK;
 use bevy::prelude::*;
 
 #[derive(Bundle)]
@@ -8,7 +7,7 @@ pub struct UIContainerFlexCenter {
 }
 
 impl UIContainerFlexCenter {
-    pub fn new(name: &str) -> Self {
+    pub fn new(name: &str, background_color: Color) -> Self {
         Self {
             node_bundle: NodeBundle {
                 style: Style {
@@ -21,7 +20,7 @@ impl UIContainerFlexCenter {
                     height: Val::Vh(100.0),
                     ..default()
                 },
-                background_color: BackgroundColor(Color::from(BLACK)),
+                background_color: BackgroundColor(background_color),
                 z_index: ZIndex::Global(i32::MAX),
                 ..default()
             },
