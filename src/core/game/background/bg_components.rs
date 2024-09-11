@@ -1,4 +1,7 @@
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub struct Base;
+pub struct Ground;
+
+#[derive(Component)]
+pub struct Background;

@@ -28,11 +28,11 @@ impl Plugin for CorePlugin {
         // Physics Plugins
         .add_plugins(PhysicsPlugins::default())
         // Debug physics
-        // .add_plugins(PhysicsDebugPlugin::default())
+        .add_plugins(PhysicsDebugPlugin::default())
         .insert_resource(Gravity(Vec2::NEG_Y * 100.0))
         .add_plugins(window::WindowPlugin)
         .add_plugins(camera::CameraPlugin)
-        .add_plugins(game::GamePlugin)
-        .add_plugins(WorldInspectorPlugin::new());
+        .add_plugins(game::GamePlugin);
+        // .add_plugins(WorldInspectorPlugin::new());
     }
 }

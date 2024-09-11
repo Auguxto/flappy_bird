@@ -12,13 +12,22 @@ pub struct BackgroundPlugin;
 impl Plugin for BackgroundPlugin {
     fn build(&self, app: &mut App) {
         // Spawn bases on enter in game state
-        app.add_systems(OnEnter(ScreenState::InGame), setup_bases)
+        app.add_systems(OnEnter(ScreenState::InGame), setup_background)
             // Move and spawn new bases only in game state
             .add_systems(
                 Update,
-                (spawn_bases, move_bases).run_if(in_state(ScreenState::InGame)),
+                (
+                    spawning_ground,
+                    spawning_background,
+                    move_ground,
+                    move_background,
+                )
+                    .run_if(in_state(ScreenState::InGame)),
             )
             // Remove bases on enter in dead state
-            .add_systems(OnEnter(ScreenState::Dead), despawn_bases);
+            .add_systems(
+                OnEnter(ScreenState::Dead),
+                (despawn_ground, despawn_background),
+            );
     }
 }

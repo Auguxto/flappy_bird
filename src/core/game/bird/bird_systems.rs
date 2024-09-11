@@ -14,21 +14,14 @@ use super::bird_resources::BirdResources;
 // Spawning Bird
 pub fn spawn_bird(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
     mut asset_server: ResMut<AssetServer>,
     windows: Query<&Window, With<PrimaryWindow>>,
 ) {
     let window = windows.get_single().unwrap();
 
-    let bird_radius = window.resolution.width() * BIRD_RADIUS;
+    // let bird_radius = window.resolution.width() * BIRD_RADIUS;
 
-    commands.spawn(BirdBundle::new(
-        &mut meshes,
-        &mut materials,
-        &mut asset_server,
-        bird_radius,
-    ));
+    commands.spawn(BirdBundle::new(&mut asset_server));
 }
 
 // Update bird sprite using based on linear velocity
@@ -48,10 +41,7 @@ pub fn update_bird_sprite(
 }
 
 // Update bird angle using based on linear velocity
-pub fn update_bird_angle(
-    asset_server: Res<AssetServer>,
-    mut birds: Query<(&LinearVelocity, &mut Transform), With<Bird>>,
-) {
+pub fn update_bird_angle(mut birds: Query<(&LinearVelocity, &mut Transform), With<Bird>>) {
     for (velocity, mut trasnform) in &mut birds {
         let angle = velocity.y.remap(1000.0, -1000.0, 0.5, -0.5);
         trasnform.rotation.z = angle;

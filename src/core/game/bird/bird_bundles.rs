@@ -18,25 +18,12 @@ pub struct BirdBundle {
 }
 
 impl BirdBundle {
-    pub fn new(
-        meshes: &mut ResMut<Assets<Mesh>>,
-        materials: &mut ResMut<Assets<ColorMaterial>>,
-        asset_server: &mut ResMut<AssetServer>,
-        bird_radius: f32,
-    ) -> Self {
-        let mesh = MaterialMesh2dBundle {
-            mesh: Mesh2dHandle(meshes.add(Circle {
-                radius: bird_radius,
-            })),
-            material: materials.add(Color::WHITE),
-            ..default()
-        };
-
+    pub fn new(asset_server: &mut ResMut<AssetServer>) -> Self {
         Self {
             // mesh,
             bird: Bird,
             rigidbody: RigidBody::Dynamic,
-            collider: Collider::circle(bird_radius),
+            collider: Collider::ellipse(34.0, 24.0),
             gravity_scale: GravityScale(10.0),
             sprite: SpriteBundle {
                 texture: asset_server.load("sprites/bird/yellowbird-midflap.png"),
