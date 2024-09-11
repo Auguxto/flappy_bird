@@ -21,6 +21,7 @@ pub fn spawn_pipe(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    mut asset_server: ResMut<AssetServer>,
     windows: Query<&Window, With<PrimaryWindow>>,
     pipe_resources: Res<PipeResources>,
 ) {
@@ -84,20 +85,20 @@ pub fn spawn_pipe(
 
         // Spawning top pipe
         commands.spawn(PipeBundle::new(
-            &mut meshes,
-            &mut materials,
+            &mut asset_server,
             pipe_width,
             top_pipe_height,
             top_pipe_transform,
+            true,
         ));
 
         // Spawning bottom pipe
         commands.spawn(PipeBundle::new(
-            &mut meshes,
-            &mut materials,
+            &mut asset_server,
             pipe_width,
             bottom_pipe_height,
             bottom_pipe_transform,
+            false,
         ));
     }
 }

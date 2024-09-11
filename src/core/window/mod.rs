@@ -14,7 +14,7 @@ impl Plugin for WindowPlugin {
             primary_window: Some(Window {
                 title: "Flappy Bird".into(),
                 name: Some("Flappy Bird".into()),
-                present_mode: PresentMode::AutoNoVsync,
+                present_mode: PresentMode::AutoVsync,
                 mode: WindowMode::BorderlessFullscreen,
                 visible: false,
                 ..default()

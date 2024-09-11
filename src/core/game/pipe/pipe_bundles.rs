@@ -1,9 +1,5 @@
-use avian2d::prelude::{Collider, CollisionMargin, LockedAxes, RigidBody, Sensor};
-use bevy::{
-    color::palettes::css::GREEN,
-    prelude::*,
-    sprite::{MaterialMesh2dBundle, Mesh2dHandle},
-};
+use avian2d::prelude::{Collider, LockedAxes, RigidBody, Sensor};
+use bevy::prelude::*;
 
 use super::pipe_components::{Pipe, ScoreArea};
 
@@ -16,28 +12,32 @@ pub struct PipeBundle {
     collider: Collider,
     rigidbody: RigidBody,
     locked_axes: LockedAxes,
-    mesh: MaterialMesh2dBundle<ColorMaterial>,
+    sprite: SpriteBundle,
 }
 
 impl PipeBundle {
     pub fn new(
-        meshes: &mut ResMut<Assets<Mesh>>,
-        materials: &mut ResMut<Assets<ColorMaterial>>,
+        asset_server: &mut ResMut<AssetServer>,
         width: f32,
         height: f32,
         transform: Transform,
+        flip_y: bool,
     ) -> Self {
         let locked_axes = LockedAxes::new().lock_translation_y().lock_rotation();
 
-        let mesh = MaterialMesh2dBundle {
-            mesh: Mesh2dHandle(meshes.add(Rectangle::new(width, height))),
-            material: materials.add(Color::from(GREEN)),
+        let sprite = SpriteBundle {
+            texture: asset_server.load("sprites/pipe/pipe-green.png"),
+            sprite: Sprite {
+                custom_size: Some(Vec2::new(width, height)),
+                flip_y,
+                ..default()
+            },
             transform,
             ..default()
         };
 
         Self {
-            mesh,
+            sprite,
             pipe: Pipe,
             locked_axes,
             name: Name::new("Pipe"),

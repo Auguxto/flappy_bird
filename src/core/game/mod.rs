@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+mod background;
 mod bird;
 mod collision;
 mod pipe;
@@ -12,12 +13,13 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
-            state::StatesPlugin,
-            screen_manager::ScreenManagerPlugin,
             ui::UiPlugin,
             bird::BirdPlugin,
             pipe::PipePlugin,
+            state::StatesPlugin,
             collision::CollisionPlugin,
+            background::BackgroundPlugin,
+            screen_manager::ScreenManagerPlugin,
         ));
     }
 }
